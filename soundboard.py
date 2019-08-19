@@ -50,7 +50,18 @@ class mainFormDlg(QWidget) :
         self.centerOnScreen()
         # C:/Users/Otto/Documents/git/soundboard/soundboard/sounds
         self.audioDirectory = "./sounds"
-        files = [f for f in listdir(self.audioDirectory) if f[-3:]=="mp3" and isfile(join(self.audioDirectory, f))]
+        files = []
+        try:
+            files = [f for f in listdir(self.audioDirectory) if f[-3:]=="mp3" and isfile(join(self.audioDirectory, f))]
+        except Exception as e:
+            msg = QMessageBox()
+            msg.setText("No sound directory")
+            msg.setInformativeText(str(e))
+            msg.setWindowTitle("Sound directory not found")
+            # msg.setDetailedText(str(e))
+            msg.setStandardButtons(QMessageBox.Ok)
+            # msg.buttonClicked.connect(self.ok)
+            msg.exec_()
         self.buttons = []
         for file in files:
             self.buttons.append(QPushButton(file))
