@@ -54,19 +54,25 @@ class mainFormDlg(QWidget) :
         self.buttons = []
         for file in files:
             self.buttons.append(QPushButton(file))
-
-        self.mainLayout = QFormLayout()
+        self.setStyleSheet("")
+        self.mainLayout = QGridLayout()
         self.soundButtons = QButtonGroup()
         self.soundButtons.setExclusive(True)
         self.soundButtons.buttonClicked.connect(self.buttonPress)
 
         self.refreshButton = QPushButton("Refresh")
         self.refreshButton.clicked.connect(self.refresh)
+        x=0
+        y=0
+        for i in range(0, len(self.buttons)):
 
-        for button in self.buttons:
-            self.mainLayout.addWidget(button)
-            # button.clicked.connect(self.buttonPress)
-            self.soundButtons.addButton(button)
+            self.mainLayout.addWidget(self.buttons[i],y,x)
+            x+=1
+            if(x==10):
+                x=0
+                y+=1
+
+            self.soundButtons.addButton(self.buttons[i])
         self.mainLayout.addWidget(self.refreshButton)
         self.setLayout(self.mainLayout)
 
