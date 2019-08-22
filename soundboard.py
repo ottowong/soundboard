@@ -9,8 +9,11 @@ import winsound
 import time
 from os import listdir
 from os.path import isfile, join
-from playsound import playsound
 import subprocess
+
+from playsound import playsound
+
+from math import sqrt
 
 class mainFormDlg(QWidget) :
 
@@ -20,12 +23,21 @@ class mainFormDlg(QWidget) :
 
 
 
-    def buttonPress(self, a):
+
+    def buttonPress(self, button):
         # self.audioDirectory+"/"+a.text()
         try:
-            print("clicked",a.text())
+            index = self.soundButtons.id(button)
+            index = index * index
+            print(index)
+            index = int(sqrt(index)-2)
+            print(index)
+            print("clicked",button.text())
+            print(self.soundButtons.id(button))
+            print(self.soundButtons.button(self.soundButtons.id(button)))
+            print(self.files[index])
             # winsound.PlaySound(self.audioDirectory+"/"+a.text(),winsound.SND_FILENAME)
-            playsound(self.audioDirectory+"/"+a.text(),False)
+            playsound(self.audioDirectory+"/"+button.text(),False)
         except Exception as e:
             msg = QMessageBox()
             msg.setText("Failed to play sound")
@@ -50,9 +62,9 @@ class mainFormDlg(QWidget) :
         self.centerOnScreen()
         # C:/Users/Otto/Documents/git/soundboard/soundboard/sounds
         self.audioDirectory = "./sounds"
-        files = []
+        self.files = []
         try:
-            files = [f for f in listdir(self.audioDirectory) if f[-3:]=="mp3" and isfile(join(self.audioDirectory, f))]
+            self.files = [f for f in listdir(self.audioDirectory) if f[-3:]=="mp3" and isfile(join(self.audioDirectory, f))]
         except Exception as e:
             msg = QMessageBox()
             msg.setText("No sound directory")
@@ -63,20 +75,33 @@ class mainFormDlg(QWidget) :
             # msg.buttonClicked.connect(self.ok)
             msg.exec_()
         self.buttons = []
-        for file in files:
-            self.buttons.append(QPushButton(file))
-        self.setStyleSheet("")
+        for i in range(0, len(self.files)):
+            a = QPushButton(self.files[i])
+            self.buttons.append(QPushButton(self.files[i]))
+        self.setStyleSheet("""
+        QPushButton{
+            border-radius: 2px;
+            padding: 0.2em 0.2em 0.3em 0.2em;
+            border: 1px solid rgb(100, 100, 100);
+            background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #deffe9, stop:0.1 #80e0a0, stop:1  #57a972);
+            color: white;
+            min-width: 140;
+            min-height: 70px;
+        }
+        """)
         self.mainLayout = QGridLayout()
+        # background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #f4f4f4, stop:0.1 #8F8F8F, stop:1  #7B7B7B);
         self.soundButtons = QButtonGroup()
         self.soundButtons.setExclusive(True)
         self.soundButtons.buttonClicked.connect(self.buttonPress)
 
         self.refreshButton = QPushButton("Refresh")
+        self.refreshButton.setStyleSheet("background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #faf0f0, stop:0.1 #e2a9a9, stop:1  #c85b5b);")
         self.refreshButton.clicked.connect(self.refresh)
         x=0
         y=0
         for i in range(0, len(self.buttons)):
-
+            self.buttons[i].setAutoDefault(False)
             self.mainLayout.addWidget(self.buttons[i],y,x)
             x+=1
             if(x==10):
